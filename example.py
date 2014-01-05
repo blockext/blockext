@@ -8,14 +8,14 @@ from blockext import *
 def not_(value):
     return not value
 
-@command("say %s for %n secs")
+@command("say %s for %n secs", blocking=True)
 def say_for_secs(text="Hello", duration=5):
     import time
     print(text)
     time.sleep(duration)
 
 
-@command("play note %n", blocking=True)
+@command("play note %n")
 def play_note(note):
     print("DING {note}".format(note=note))
     time.sleep(2)

@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 import json
 
 from blockext import *
@@ -62,13 +64,13 @@ def poll(is_browser=False):
             for args in menu_permutations(block.arg_shapes):
                 lines += "{path} {result}\n".format(
                     path="/".join([name] + args),
-                    result=block(*args)
+                    result=block(*args).replace("\n", " "),
                 )
     return ("text/plain", lines)
 
 @reporter("_problem", hidden=True)
 def _problem():
-    return "The Scratch Sensor board is not connected.\xe2\x80\xa8 Foo."
+    return "The Scratch Sensor board is not connected.\n Foo."
 
 @reporter("_busy", hidden=True)
 def _busy():

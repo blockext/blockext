@@ -135,6 +135,7 @@ def index(is_browser=False):
         body { font-family: sans-serif; }
         a { color: #20e; text-decoration: none; }
         a:hover { text-decoration: underline; }
+        ul { padding-left: 1em; }
         </style>
         """
 
@@ -155,12 +156,15 @@ def index(is_browser=False):
         for name in sorted(Blockext.blocks):
             block = Blockext.blocks[name]
             if block.is_hidden: continue
+            parts = [name] + block.defaults
+            if block.is_blocking: parts.insert(1, "-")
             html += '<li><a href="/{path}">{text}</a>'.format(
-                path=escape("/".join(map(unicode,
-                                         [name] + block.defaults))),
-                text=escape(unicode(block)),
+                path=escape("/".join(map(unicode, parts))),
+                text=escape(unicode(block) +
+                            (" *" if block.is_blocking else "")),
             )
         html += "</ul>"
+        html += "<small>* = blocking</small>"
 
         return ("text/html", html)
     else:
@@ -214,10 +218,6 @@ class Block(object):
         shape_defaults = map(Block.INPUT_DEFAULTS.get, self.arg_shapes)
         self.defaults = [a or b for (a, b) in zip(defaults, shape_defaults)]
 
-        if (not all(shape[0] in "md" for shape in self.arg_shapes) and
-                shape != "reporter"):
-            self.is_blocking = True
-
     def __repr__(self):
         return "<Block(%r)>" % self.text
 
@@ -254,6 +254,7 @@ class Block(object):
         return arg
 
     def __call__(self, *args):
+        request_id = None
         if self.is_blocking:
             request_id = args[0]
             args = args[1:]
@@ -261,16 +262,13 @@ class Block(object):
         args = [Block.convert_arg(a, t) for (a, t)
                 in zip(args, self.arg_shapes)]
         result = self.func(*args)
+        if self.shape == "command": result = None
         result = ("true" if result is True else
                   "false" if result is False else
-                  "" if result == None else result)
-        if self.is_blocking:
-            if request_id in Blockext.requests:
-                del Blockext.requests[request_id]
-        if self.shape in ("reporter", "predicate"):
-            return result
-        else:
-            return ""
+                  "" if result == None else unicode(result))
+        if request_id and request_id in Blockext.requests:
+            del Blockext.requests[request_id]
+        return result
 
 
 
