@@ -1,4 +1,3 @@
-
 import blockext
 from blockext import *
 
@@ -42,7 +41,7 @@ def light():
 def move(steps):
     print("." * steps)
 
-
+"""
             [" ", "beep", "playBeep"],
             [" ", "set beep volume to %n", "setVolume", 5],
             ["r", "beep volume", "volume"],
@@ -56,7 +55,7 @@ def move(steps):
             "deliverOrCollect": ["delivery", "collection"]
         }
     }
-
+"""
 
 
 if __name__ == "__main__":
