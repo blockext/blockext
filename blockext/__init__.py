@@ -47,6 +47,8 @@ class Blockext(BaseHTTPRequestHandler):
     name = "A blockext extension"
     port = 8080
 
+    requests = {}
+
     def log_message(self, format, *args):
         if isinstance(args[0], str) and args[0].startswith("GET /poll"):
             return
@@ -189,6 +191,9 @@ class Block(object):
     }
 
     def __init__(self, text, shape, func, blocking=False, hidden=False):
+        if blocking and shape != "command":
+            raise ValueError("only commands can be blocking")
+
         self.text = text
         self.shape = shape
         self.func = func
@@ -208,6 +213,10 @@ class Block(object):
         defaults = [None] * padding  +  defaults
         shape_defaults = map(Block.INPUT_DEFAULTS.get, self.arg_shapes)
         self.defaults = [a or b for (a, b) in zip(defaults, shape_defaults)]
+
+        if (not all(shape[0] in "md" for shape in self.arg_shapes) and
+                shape != "reporter"):
+            self.is_blocking = True
 
     def __repr__(self):
         return "<Block(%r)>" % self.text
@@ -240,16 +249,28 @@ class Block(object):
             arg = True if arg == "true" else False if arg == "false" else None
         elif shape == "m":
             menu_name = arg[2:]
+            # TODO check in menu options?
+        # shape = "d" ?
         return arg
 
     def __call__(self, *args):
+        if self.is_blocking:
+            request_id = args[0]
+            args = args[1:]
+            Blockext.requests[request_id] = True
         args = [Block.convert_arg(a, t) for (a, t)
                 in zip(args, self.arg_shapes)]
         result = self.func(*args)
         result = ("true" if result is True else
                   "false" if result is False else
                   "" if result == None else result)
-        return result
+        if self.is_blocking:
+            if request_id in Blockext.requests:
+                del Blockext.requests[request_id]
+        if self.shape in ("reporter", "predicate"):
+            return result
+        else:
+            return ""
 
 
 
@@ -271,7 +292,8 @@ predicate = _shape("predicate")
 
 def run(name="", port=8080):
     blocking_reporters = [b.text for b in Blockext.blocks.values()
-                          if b.shape == "reporter" and b.is_blocking]
+                          if b.shape != "command" and
+                          not all(shape[0] in "md" for shape in b.arg_shapes)]
     if blocking_reporters:
         print("WARNING: Scratch 2.0 doesn't support blocking reporters yet.")
         print("Affects: " + "\n         ".join(blocking_reporters))

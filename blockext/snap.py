@@ -62,6 +62,8 @@ def generate_s2e():
         join_block = SubElement(http_block, "block", s="reportJoinWords")
         list_ = SubElement(join_block, "list")
         url = "localhost:{port}/{name}".format(port=Blockext.port, name=name)
+        if block.is_blocking:
+            url += "/-" # Blank request id
         SubElement(list_, "l").text = url
         input_names = inspect.getargspec(block.func).args
         for name in input_names:
