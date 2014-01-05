@@ -26,6 +26,7 @@ def generate_s2e():
         "app": "Snap! 4.0, http://snap.berkeley.edu",
         "version": "1",
     })
+
     for name, block in Blockext.blocks.items():
         if block.is_hidden: continue
 

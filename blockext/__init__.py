@@ -21,12 +21,11 @@ except ImportError:
     from socketserver import ThreadingMixIn
 
 # TODO rewrite entire thing for package manager.
-# TODO scratch blocking commands
 # TODO error handling
 
 
 
-# TODO fix this
+# TODO I'm sure this isn't right
 try:
     unicode
 except NameError:
