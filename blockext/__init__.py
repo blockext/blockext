@@ -7,12 +7,13 @@ import re
 import threading
 import time
 try:
+    from urllib import quote
     from urllib import unquote as _unquote_str
     def unquote(part):
         part = str(part)
         return _unquote_str(part).decode("utf-8")
 except ImportError:
-    from urllib.parse import unquote
+    from urllib.parse import unquote, quote
 try:
     from BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
     from SocketServer import ThreadingMixIn
@@ -28,9 +29,20 @@ except ImportError:
 # TODO I'm sure this isn't right
 try:
     unicode
+    unichr
 except NameError:
     unicode = str
+    unichr = chr
 
+
+def unquote_unicode(text):
+    def unicode_unquoter(match):
+        c = unichr(int(match.group(1), 16))
+        # urlib.unquote doesn't like Unicode.
+        # So, we simply URL-encode the character again -- but this time, the
+        # "correct" way!
+        return quote(c.encode("utf-8"))
+    return re.sub(r'%u([0-9a-fA-F]{4})', unicode_unquoter, text)
 
 
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
@@ -58,7 +70,7 @@ class Blockext(BaseHTTPRequestHandler):
         mime_type = "text/plain"
 
         path = self.path.split("/")[1:]
-        path = [unquote(p) for p in path]
+        path = [unquote(unquote_unicode(p)) for p in path]
         name = path[0]
         args = path[1:]
 
