@@ -1,43 +1,96 @@
-"""
-blockext spec
-for tim
-because he's too good for a doc file
-
-Example code:
-"""
 
 import blockext
+from blockext import *
 
-blockext.PORT = 1234
 
-@blockext.predicate("/tf")
+
+@predicate("not %b")
+def not_(value):
+    return not value
+
+@command("say %s for %n secs")
+def say_for_secs(text="Hello", duration=5):
+    import time
+    print(text)
+    time.sleep(duration)
+
+
+@command("play note %n", blocking=True)
+def play_note(note):
+    print("DING {note}".format(note=note))
+    time.sleep(2)
+
+menu("pizza", ["tomato", "cheese", "hawaii"])
+
+@reporter("colour of %m.pizza flavour pizza")
+def pizza_colour(pizza="tomato"):
+    return {
+        "tomato": "red",
+        "cheese": "yellow",
+        "hawaii": "orange",
+    }[pizza]
+
+@reporter("id %s")
+def id(text):
+    return text
+
+
+
+"""
+@predicate("true or false")
 def tf():
-    blockspec = "true or false"
-    return random.choice(True, False)
+    import random
+    return random.choice((True, False))
 
+@reporter("numify %b")
+def numify(value):
+    return int(not value)
 
-@blockext.reporter("/weather", blocking=True)
-def weather(city):
-    blockspec = "current weather in %s"
-    return weatherIn(city)
+@command("set light to %b")
+def set_light(boolean_value):
+    print("light is {}".format("on" if boolean_value else "off"))
 
-@blockext.reporter("/light")
+menu("city", ["Boston", "Bournemouth", "Barcelona", "Belgium"])
+
+@reporter("lookup weather in %m.city", blocking=True)
+def weather(city="Boston"):
+    import time
+    return "{weather} in {city}".format(city=city,
+        weather=["sunny", "cloudy", "rainy", "snowy"][int(time.time() % 4)])
+
+menu("motor", [1, 2, 3, "A", "B", "C"])
+
+@command("move motor %d.motor by %n degrees", blocking=True)
+def move_motor(motor="A", angle=4):
+    print "move {motor} by {angle} degrees!".format(motor=motor, angle=angle)
+    time.sleep(1)
+    print "..."
+
+@reporter("light sensor value")
 def light():
-    blockspec = "light sensor value"
-    return lightsensor.get()
+    import random
+    return random.randint(0, 100)
 
-@blockext.stack("/move")
-def move(degrees):
-    blockspec = "move %n degrees"
-    move(degrees)
+@command("drive %n steps")
+def move(steps):
+    print("." * steps)
 
-blockext.generate_extension(blockext.SCRATCH, "extension.json")
-blockext.generate_extension(blockext.SNAP, "extension.xml")
+
+            [" ", "beep", "playBeep"],
+            [" ", "set beep volume to %n", "setVolume", 5],
+            ["r", "beep volume", "volume"],
+            [" ", "order %m.pizzaFlavour pizza for %m.deliverOrCollect",
+    "orderPizza"],
+            ["r", "colour of %m.pizzaFlavour pizza", "pizzaColour"],
+            ["r", "random upto %n", "randomThingy"]
+        ],
+        "menus": {
+            "pizzaFlavour": ["tomato", "cheese", "mozarella", "hawaiian"],
+            "deliverOrCollect": ["delivery", "collection"]
+        }
+    }
+"""
+
 if __name__ == "__main__":
-    blockext.run()
+    blockext.run("Fancy Spaceship", 1234)
 
-
-# I suppose a launcher could do that on demand
-
-# Or run() could do it for you. Really I wanted you to think about *why* you're
-# doing stuff.
