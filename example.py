@@ -92,5 +92,5 @@ def move(steps):
 """
 
 if __name__ == "__main__":
-    blockext.run("Fancy Spaceship", 1234)
+    blockext.run("Fancy Spaceship", "spaceship", 1234)
 

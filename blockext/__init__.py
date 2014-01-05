@@ -50,12 +50,13 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
 
 
 class Blockext(BaseHTTPRequestHandler):
-    # HTTPServer makes one instance of this for each request.
+    # HTTPServer makes one Blockext instance for each request.
 
     blocks = {}
-    handlers = {}
+    _handlers = {}
     menus = {}
     name = "A blockext extension"
+    filename = "extension"
     port = 8080
 
     requests = {}
@@ -64,6 +65,14 @@ class Blockext(BaseHTTPRequestHandler):
         if isinstance(args[0], str) and args[0].startswith("GET /poll"):
             return
         return BaseHTTPRequestHandler.log_message(self, format, *args)
+
+    @classmethod
+    def handlers(cls):
+        handlers = {}
+        for name, func in cls._handlers.items():
+            name = name.format(**vars(cls))
+            handlers[name] = func
+        return handlers
 
     def do_GET(self):
         is_browser = "text/html" in self.headers.get("Accept", "")
@@ -74,7 +83,7 @@ class Blockext(BaseHTTPRequestHandler):
         name = path[0]
         args = path[1:]
 
-        func = self.handlers.get(name, self.blocks.get(name, None))
+        func = self.handlers().get(name, self.blocks.get(name, None))
         if func:
             if isinstance(func, Block):
                 response = func(*args)
@@ -119,7 +128,7 @@ class Blockext(BaseHTTPRequestHandler):
 
     @classmethod
     def register_handler(cls, name, func, hidden=False, display=None):
-        cls.handlers[name] = func
+        cls._handlers[name] = func
         func.is_hidden = hidden
         func.display = display
 
@@ -153,8 +162,9 @@ def index(is_browser=False):
         html += "<h1>{name}</h1>".format(name=escape(Blockext.name))
 
         html += "<ul>"
-        for name in sorted(Blockext.handlers):
-            func = Blockext.handlers[name]
+        handlers = Blockext.handlers()
+        for name in sorted(handlers):
+            func = handlers[name]
             if func.is_hidden: continue
             html += '<li><a href="/{path}">{display}</a>'.format(
                 path=escape(name),
@@ -299,7 +309,7 @@ reporter = _shape("reporter")
 predicate = _shape("predicate")
 
 
-def run(name="", port=8080):
+def run(name="", filename="extension", port=8080):
     blocking_reporters = [b.text for b in Blockext.blocks.values()
                           if b.shape != "command" and
                           not all(shape[0] in "md" for shape in b.arg_shapes)]
@@ -309,6 +319,7 @@ def run(name="", port=8080):
         print("")
 
     Blockext.name = name
+    Blockext.filename = filename
     Blockext.port = port
     server = ThreadedHTTPServer(('localhost', port), Blockext)
     print('Listening on {}'.format(port))

@@ -23,7 +23,7 @@ BLOCK_SHAPES = {
     "predicate": "b",
 }
 
-@handler("scratch_extension.s2e", display="Download Scratch 2.0 extension")
+@handler("scratch_{filename}.s2e", display="Download Scratch 2.0 extension")
 def generate_s2e():
     extension = {
         "extensionName": Blockext.name,

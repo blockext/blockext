@@ -20,7 +20,7 @@ def pretty(stuff):
     xml = xml.dom.minidom.parseString(ElementTree.tostring(stuff))
     return xml.toprettyxml()
 
-@handler("snap_extension.xml", display="Download Snap! blocks")
+@handler("snap_{filename}.xml", display="Download Snap! blocks")
 def generate_s2e():
     root = Element("blocks", {
         "app": "Snap! 4.0, http://snap.berkeley.edu",
