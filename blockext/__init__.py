@@ -327,4 +327,5 @@ def run(name="", filename="extension", port=8080):
 
 
 import blockext.scratch
+from blockext.scratch import problem, reset
 import blockext.snap

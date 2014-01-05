@@ -91,6 +91,21 @@ def move(steps):
     }
 """
 
+@problem
+def my_problem():
+    return "The Scratch Sensor board is not connected. Foo."
+
+@reset
+def my_reset():
+    print("""
+    Reset! The red stop button has been clicked,
+    And now everything is how it was.
+    ...
+    (Poetry's not my strong point, you understand.)
+    """)
+
+
+
 if __name__ == "__main__":
     blockext.run("Fancy Spaceship", "spaceship", 1234)
 

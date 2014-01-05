@@ -68,10 +68,19 @@ def poll(is_browser=False):
                 )
     return ("text/plain", lines)
 
-@reporter("_problem", hidden=True)
-def _problem():
-    return "The Scratch Sensor board is not connected.\n Foo."
-
 @reporter("_busy", hidden=True)
 def _busy():
     return " ".join(map(str, Blockext.requests))
+
+# Decorators
+
+def problem(func):
+    @reporter("_problem", hidden=True)
+    def _problem():
+        return func()
+
+def reset(func):
+    @command("reset_all", hidden=True)
+    def reset_all():
+        func()
+
