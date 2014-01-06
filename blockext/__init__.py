@@ -74,8 +74,16 @@ class Blockext(BaseHTTPRequestHandler):
             handlers[name] = func
         return handlers
 
+    def do_OPTIONS(self):
+        self.send_response(200)
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Headers",
+                         "X-Requested-With, X-Application, Accept")
+        self.end_headers()
+
     def do_GET(self):
-        is_browser = "text/html" in self.headers.get("Accept", "")
+        is_browser = ("text/html" in self.headers.get("Accept", "") and
+                      "Snap!" not in self.headers.get("X-Application", ""))
         mime_type = "text/plain"
 
         path = self.path.split("/")[1:]
