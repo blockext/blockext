@@ -41,21 +41,6 @@ def light():
 def move(steps):
     print("." * steps)
 
-"""
-            [" ", "beep", "playBeep"],
-            [" ", "set beep volume to %n", "setVolume", 5],
-            ["r", "beep volume", "volume"],
-            [" ", "order %m.pizzaFlavour pizza for %m.deliverOrCollect",
-    "orderPizza"],
-            ["r", "colour of %m.pizzaFlavour pizza", "pizzaColour"],
-            ["r", "random upto %n", "randomThingy"]
-        ],
-        "menus": {
-            "pizzaFlavour": ["tomato", "cheese", "mozarella", "hawaiian"],
-            "deliverOrCollect": ["delivery", "collection"]
-        }
-    }
-"""
 
 
 if __name__ == "__main__":
