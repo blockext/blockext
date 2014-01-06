@@ -18,11 +18,11 @@ def set_light(boolean_value):
 
 menu("city", ["Boston", "Bournemouth", "Barcelona", "Belgium"])
 
-"""@reporter("lookup weather in %m.city", blocking=True)
+@reporter("lookup weather in %m.city")
 def weather(city="Boston"):
     import time
     return "{weather} in {city}".format(city=city,
-        weather=["sunny", "cloudy", "rainy", "snowy"][int(time.time() % 4)])"""
+        weather=["sunny", "cloudy", "rainy", "snowy"][int(time.time() % 4)])
 
 menu("motor", [1, 2, 3, "A", "B", "C"])
 
