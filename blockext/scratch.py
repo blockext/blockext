@@ -33,6 +33,7 @@ def generate_s2e():
     }
     for name, block in Blockext.blocks.items():
         if block.is_hidden: continue
+        if name in ("_problem", "_no_problem", "reset_all"): continue
         shape = BLOCK_SHAPES[block.shape]
         if block.shape == "command" and block.is_blocking:
             shape = "w"
@@ -71,16 +72,3 @@ def poll(is_browser=False):
 @reporter("_busy", hidden=True)
 def _busy():
     return " ".join(map(str, Blockext.requests))
-
-# Decorators
-
-def problem(func):
-    @reporter("_problem", hidden=True)
-    def _problem():
-        return func()
-
-def reset(func):
-    @command("reset_all", hidden=True)
-    def reset_all():
-        func()
-

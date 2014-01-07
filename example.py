@@ -36,7 +36,8 @@ def id(text):
 
 @problem
 def my_problem():
-    return "The Scratch Sensor board is not connected. Foo."
+    if time.time() % 8 > 4:
+        return "The Scratch Sensor board is not connected. Foo."
 
 @reset
 def my_reset():

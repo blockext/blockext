@@ -321,6 +321,29 @@ reporter = _shape("reporter")
 predicate = _shape("predicate")
 
 
+# Decorators (for special-in-Scratch features)
+
+def problem(func):
+    @predicate("{name} is working?")
+    def _no_problem():
+        return not func()
+
+    @reporter("problem with {name}")
+    def _problem():
+        return func()
+
+    return _problem
+
+problem(lambda: None)
+
+def reset(func):
+    @command("reset {name}")
+    def reset_all():
+        func()
+
+    return reset_all
+
+
 def run(name="", filename="extension", port=8080):
     blocking_reporters = [b.text for b in Blockext.blocks.values()
                           if b.shape != "command" and
