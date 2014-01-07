@@ -157,10 +157,26 @@ def index(is_browser=False):
         <title>blockext</title>
 
         <style>
-        body { font-family: sans-serif; }
-        a { color: #20e; text-decoration: none; }
-        a:hover { text-decoration: underline; }
-        ul { padding-left: 1em; }
+        body {
+            font-family: sans-serif;
+        }
+        a {
+            color: #10a;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        ul {
+            padding-left: 1.5em;
+        }
+        li {
+            margin: 1em 0;
+        }
+        li p {
+            margin: 0.5em 0;
+            margin-left: 1em;
+        }
         </style>
         """
 
@@ -189,6 +205,10 @@ def index(is_browser=False):
                 text=escape(unicode(block) +
                             (" *" if block.is_blocking else "")),
             )
+            if block.help_text:
+                html += "<p>{text}".format(
+                    text=escape(block.help_text).replace("\n\n", "<p>"),
+                )
         html += "</ul>"
         html += "<small>* = blocking</small>"
 
@@ -220,7 +240,8 @@ class Block(object):
         "b": "<%s>",
     }
 
-    def __init__(self, text, shape, func, blocking=False, hidden=False):
+    def __init__(self, text, shape, func, blocking=False, hidden=False,
+            help_text=None):
         if blocking and shape != "command":
             raise ValueError("only commands can be blocking")
 
@@ -229,6 +250,10 @@ class Block(object):
         self.func = func
         self.is_blocking = blocking
         self.is_hidden = hidden
+
+        self._help_text = help_text or func.__doc__ or ""
+        self._help_text = re.sub(r'[ \t]*\n[ \t]*', "\n", self._help_text)
+        self._help_text = self._help_text.strip()
 
         self.arg_shapes = []
         for part in Block.INPUT_RE.split(self.text):
@@ -247,6 +272,10 @@ class Block(object):
     @property
     def text(self):
         return self._text.format(**vars(Blockext))
+
+    @property
+    def help_text(self):
+        return self._help_text.format(**vars(Blockext))
 
     def __repr__(self):
         return "<Block(%r)>" % self.text
@@ -321,12 +350,32 @@ predicate = _shape("predicate")
 # Decorators (for special-in-Scratch features)
 
 def problem(func):
-    @predicate("{name} is working?")
+    """Decorator for a built-in problem report block.
+
+    The function should return a string describing the problem with the
+    extension, if any. The problem report should help users troubleshoot.
+
+    Returns None if everything is working correctly.
+
+        @problem
+        def spaceship_problem():
+            if not spaceship_is_connected():
+                return "The spaceship is not connected."
+
+    """
+
+    @predicate("{name} is working?", help_text=func.__doc__)
     def _no_problem():
+        """Reports `true` if the extension is working without any problems."""
         return not func()
 
-    @reporter("problem with {name}")
+    @reporter("problem with {name}", help_text=func.__doc__)
     def _problem():
+        """Reports a short description of the problem to help troubleshooting.
+
+        If the extension is working fine, it reports an empty string.
+
+        """
         return func()
 
     return _problem
@@ -334,8 +383,13 @@ def problem(func):
 problem(lambda: None)
 
 def reset(func):
-    @command("reset {name}")
+    @command("reset {name}", help_text=func.__doc__)
     def reset_all():
+        """Resets the extension to its initial state.
+
+        Has the same effect as clicking the red stop button in Scratch 2.0.
+
+        """
         func()
 
     return reset_all

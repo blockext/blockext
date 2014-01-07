@@ -21,7 +21,7 @@ def pretty(stuff):
     return xml.toprettyxml()
 
 @handler("snap_{filename}.xml", display="Download Snap! blocks")
-def generate_s2e():
+def generate_xml():
     root = Element("blocks", {
         "app": "Snap! 4.0, http://snap.berkeley.edu",
         "version": "1",
@@ -34,6 +34,11 @@ def generate_s2e():
             "type": block.shape,
             "category": "other",
         })
+
+        if block.help_text:
+            comment = SubElement(defn, "comment", w="360", collapsed="false")
+            comment.text = block.help_text
+
         SubElement(defn, "header")
         SubElement(defn, "code")
         inputs = SubElement(defn, "inputs")
@@ -149,6 +154,4 @@ def generate_s2e():
 
     # It's useful to change this to "application/xml" while debugging.
     return ("application/octet-stream", ElementTree.tostring(root))
-
-
 
