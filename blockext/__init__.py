@@ -21,9 +21,6 @@ except ImportError:
     from http.server import HTTPServer, BaseHTTPRequestHandler
     from socketserver import ThreadingMixIn
 
-# TODO rewrite entire thing for package manager.
-# TODO error handling
-
 
 
 # TODO I'm sure this isn't right
