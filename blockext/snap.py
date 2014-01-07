@@ -74,17 +74,78 @@ def generate_s2e():
             encode = SubElement(list_, "block", s="reportTextFunction")
             l = SubElement(encode, "l")
             SubElement(l, "option").text = "encode URI component"
-            SubElement(encode, "block", var=name)
+            join = SubElement(encode, "block", s="reportJoinWords")
+            SubElement(join, "block", var=name)
 
-        script = SubElement(defn, "script")
         if block.shape == "command":
-            selector = "doRun" if block.is_blocking else "fork"
-            run = SubElement(script, "block", s=selector)
-            ring = SubElement(run, "block", s="reifyReporter")
-            lambda_ = SubElement(ring, "autolambda")
-            lambda_.append(http_block)
-        else: # reporter, predicate
-            SubElement(script, "block", s="doReport").append(http_block)
+            script_xml = """
+            <script>
+                <block s="{selector}">
+                    <block s="reifyReporter">
+                        <autolambda>
+                            {http_block_xml}
+                        </autolambda>
+                    </block>
+                </block>
+            </script>
+            """.format(
+                selector="doRun" if block.is_blocking else "fork",
+                http_block_xml="{http_block_xml}",
+            )
+        elif block.shape == "predicate":
+            script_xml = """
+            <script>
+                <block s="doDeclareVariables">
+                    <list>
+                        <l>result</l>
+                    </list>
+                </block>
+                <block s="doSetVar">
+                    <l>result</l>
+                    {http_block_xml}
+                </block>
+                <block s="doIf">
+                    <block s="reportEquals">
+                        <block var="result"/>
+                        <l>true</l>
+                    </block>
+                    <script>
+                        <block s="doSetVar">
+                            <l>result</l>
+                            <block s="reportTrue"/>
+                        </block>
+                    </script>
+                </block>
+                <block s="doIf">
+                    <block s="reportEquals">
+                        <block var="result"/>
+                        <l>false</l>
+                    </block>
+                    <script>
+                        <block s="doSetVar">
+                            <l>result</l>
+                            <block s="reportFalse"/>
+                        </block>
+                    </script>
+                </block>
+                <block s="doReport">
+                    <block var="result"/>
+                </block>
+            </script>
+            """
+        elif block.shape == "reporter":
+            script_xml = """
+            <script>
+                <block s="doReport">
+                    {http_block_xml}
+                </block>
+            </script>
+            """
+
+        script = ElementTree.fromstring(script_xml.format(
+            http_block_xml=ElementTree.tostring(http_block),
+        ))
+        defn.append(script)
 
     # It's useful to change this to "application/xml" while debugging.
     return ("application/octet-stream", ElementTree.tostring(root))
