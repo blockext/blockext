@@ -28,9 +28,9 @@ menu("motor", [1, 2, 3, "A", "B", "C"])
 
 @command("move motor %d.motor by %n degrees", blocking=True)
 def move_motor(motor="A", angle=4):
-    print "move {motor} by {angle} degrees!".format(motor=motor, angle=angle)
+    print("move {motor} by {angle} degrees!".format(motor=motor, angle=angle))
     time.sleep(1)
-    print "..."
+    print("...")
 
 @reporter("light sensor value")
 def light():
