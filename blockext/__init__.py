@@ -367,7 +367,10 @@ def problem(func):
     @predicate("{name} is working?", help_text=func.__doc__)
     def _no_problem():
         """Reports `true` if the extension is working without any problems."""
-        return not func()
+        if func:
+            return not func()
+        else:
+            return True
 
     @reporter("problem with {name}", help_text=func.__doc__)
     def _problem():
@@ -378,21 +381,24 @@ def problem(func):
         """
         return func()
 
+    if not func:
+        del Blockext.blocks["_problem"]
+
     return _problem
 
-problem(lambda: None)
+problem(None)
 
 def reset(func):
     @command("reset {name}", help_text=func.__doc__)
-    def reset_all():
+    def _reset():
         """Resets the extension to its initial state.
 
-        Has the same effect as clicking the red stop button in Scratch 2.0.
+        Triggered by clicking the red stop button in Scratch 2.0.
 
         """
         func()
 
-    return reset_all
+    return _reset
 
 
 def run(name="", filename="extension", port=8080):

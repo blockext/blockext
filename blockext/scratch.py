@@ -33,7 +33,7 @@ def generate_s2e():
     }
     for name, block in Blockext.blocks.items():
         if block.is_hidden: continue
-        if name in ("_problem", "_no_problem", "reset_all"): continue
+        if name in ("_problem", "_no_problem", "_reset"): continue
         shape = BLOCK_SHAPES[block.shape]
         if block.shape == "command" and block.is_blocking:
             shape = "w"
@@ -72,3 +72,13 @@ def poll(is_browser=False):
 @reporter("_busy", hidden=True)
 def _busy():
     return " ".join(map(str, Blockext.requests))
+
+
+# The actual command is called _reset so it sorts to the top along with the
+# other built-in commands.
+
+@command("reset_all", hidden=True)
+def reset_all():
+    block = Blockext.blocks.get("_reset")
+    if block: block()
+
