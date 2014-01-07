@@ -227,7 +227,7 @@ class Block(object):
         if blocking and shape != "command":
             raise ValueError("only commands can be blocking")
 
-        self.text = text
+        self._text = text
         self.shape = shape
         self.func = func
         self.is_blocking = blocking
@@ -246,6 +246,10 @@ class Block(object):
         defaults = [None] * padding  +  defaults
         shape_defaults = map(Block.INPUT_DEFAULTS.get, self.arg_shapes)
         self.defaults = [a or b for (a, b) in zip(defaults, shape_defaults)]
+
+    @property
+    def text(self):
+        return self._text.format(**vars(Blockext))
 
     def __repr__(self):
         return "<Block(%r)>" % self.text
