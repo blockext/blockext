@@ -75,12 +75,13 @@ class Blockext(BaseHTTPRequestHandler):
         self.send_response(200)
         self.send_header("Access-Control-Allow-Origin", "*")
         self.send_header("Access-Control-Allow-Headers",
-                         "X-Requested-With, X-Application, Accept")
+                         "X-Requested-With, X-Application")
         self.end_headers()
 
     def do_GET(self):
         is_browser = ("text/html" in self.headers.get("Accept", "") and
-                      "Snap!" not in self.headers.get("X-Application", ""))
+                      "Snap!" not in self.headers.get("X-Application", "") and
+                      "Origin" not in self.headers)
         mime_type = "text/plain"
 
         path = self.path.split("/")[1:]
