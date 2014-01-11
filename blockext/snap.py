@@ -15,11 +15,6 @@ INPUT_SELECTORS = {
     "d": "n",
 }
 
-def pretty(stuff):
-    import xml.dom.minidom
-    xml = xml.dom.minidom.parseString(ElementTree.tostring(stuff))
-    return xml.toprettyxml()
-
 @handler("snap_{filename}.xml", display="Download Snap! blocks")
 def generate_xml(is_browser=False):
     root = Element("blocks", {

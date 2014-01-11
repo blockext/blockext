@@ -349,7 +349,7 @@ predicate = _shape("predicate")
 # Decorators (for special-in-Scratch features)
 
 def problem(func):
-    """Decorator for a built-in problem report block.
+    """Decorator for the problem report tooltip in Scratch 2.0.
 
     The function should return a string describing the problem with the
     extension, if any. The problem report should help users troubleshoot.
@@ -363,15 +363,7 @@ def problem(func):
 
     """
 
-    @predicate("{name} is working?", help_text=func.__doc__)
-    def _no_problem():
-        """Reports `true` if the extension is working without any problems."""
-        if func:
-            return not func()
-        else:
-            return True
-
-    @reporter("problem with {name}", help_text=func.__doc__)
+    @reporter("problem with {name}", hidden=True)
     def _problem():
         """Reports a short description of the problem to help troubleshooting.
 
@@ -380,16 +372,11 @@ def problem(func):
         """
         return func()
 
-    if not func:
-        del Blockext.blocks["_problem"]
-
     return _problem
 
-problem(None)
-
 def reset(func):
-    @command("reset {name}", help_text=func.__doc__)
-    def _reset():
+    @command("reset {name}", hidden=True)
+    def reset_all():
         """Resets the extension to its initial state.
 
         Triggered by clicking the red stop button in Scratch 2.0.
@@ -397,7 +384,7 @@ def reset(func):
         """
         func()
 
-    return _reset
+    return reset_all
 
 
 def run(name="", filename="extension", port=8080):
