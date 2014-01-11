@@ -24,7 +24,7 @@ BLOCK_SHAPES = {
 }
 
 @handler("scratch_{filename}.s2e", display="Download Scratch 2.0 extension")
-def generate_s2e():
+def generate_s2e(is_browser=False):
     extension = {
         "extensionName": Blockext.name,
         "extensionPort": Blockext.port,

@@ -94,10 +94,8 @@ class Blockext(BaseHTTPRequestHandler):
             if isinstance(func, Block):
                 response = func(*args)
                 mime_type = "text/plain"
-            elif "is_browser" in inspect.getargspec(func).args:
-                (mime_type, response) = func(is_browser=is_browser, *args)
             else:
-                (mime_type, response) = func(*args)
+                (mime_type, response) = func(is_browser=is_browser, *args)
             status = 200
         else:
             response = "ERROR: Not found"

@@ -21,7 +21,7 @@ def pretty(stuff):
     return xml.toprettyxml()
 
 @handler("snap_{filename}.xml", display="Download Snap! blocks")
-def generate_xml():
+def generate_xml(is_browser=False):
     root = Element("blocks", {
         "app": "Snap! 4.0, http://snap.berkeley.edu",
         "version": "1",
