@@ -24,21 +24,25 @@ BLOCK_SHAPES = {
     "predicate": "b",
 }
 
-@handler("scratch_{filename}.s2e", display="Download Scratch 2.0 extension")
-def generate_s2e(is_browser=False):
-    extension = {
-        "extensionName": Blockext.name,
-        "extensionPort": Blockext.port,
-        "blockSpecs": [],
-        "menus": Blockext.menus,
-    }
+def generate_specs():
+    blockspecs = []
     for name, block in Blockext.blocks.items():
         if block.is_hidden: continue
         shape = BLOCK_SHAPES[block.shape]
         if block.shape == "command" and block.is_blocking:
             shape = "w"
         blockspec = [shape, block.text, name] + block.defaults
-        extension["blockSpecs"].append(blockspec)
+        blockspecs.append(blockspec)
+    return blockspecs
+
+@handler("scratch_{filename}.s2e", display="Download Scratch 2.0 extension")
+def generate_s2e(is_browser=False):
+    extension = {
+        "extensionName": Blockext.name,
+        "extensionPort": Blockext.port,
+        "blockSpecs": generate_specs(),
+        "menus": Blockext.menus,
+    }
     return ("application/octet-stream", json.dumps(extension))
 
 
@@ -74,3 +78,6 @@ def poll(is_browser=False):
 def _busy():
     return " ".join(map(str, Blockext.requests))
 
+@handler("get_specs", hidden=True)
+def _get_specs(is_browser=False):
+    return generate_s2e(is_browser)

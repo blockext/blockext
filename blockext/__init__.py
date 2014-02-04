@@ -59,8 +59,10 @@ class Blockext(BaseHTTPRequestHandler):
     requests = {}
 
     def log_message(self, format, *args):
-        if isinstance(args[0], str) and args[0].startswith("GET /poll"):
-            return
+        if isinstance(args[0], str):
+            words = args[0].split(" ")
+            if words[0] == "GET" and words[1] in ("/poll"): #, "/get_specs"):
+                return
         return BaseHTTPRequestHandler.log_message(self, format, *args)
 
     @classmethod
