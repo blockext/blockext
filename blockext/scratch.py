@@ -5,6 +5,17 @@ import json
 from blockext import *
 
 
+def quote_unicode(text):
+    """Scratch expects non-standard unicode URL encoding."""
+    def unicode_quoter(c):
+        v = ord(c)
+        if v < 128:
+            return quote(c)
+        else:
+            if v >= 65536: raise ValueError
+            return "%u" + hex(v)[:2]
+    return b"".join(map(unicode_quoter, text))
+
 
 CROSSDOMAIN_XML = """
 <?xml version="1.0"?>
@@ -66,6 +77,10 @@ def poll(is_browser=False):
                 lines += "{path} {result}\n".format(
                     path="/".join([name] + args),
                     result=block(*args).replace("\n", " "),
+                    # TODO Scratch's url-decoding is buggy.
+                    #path="/".join(quote_unicode(p).replace("/", "%2F")
+                    #              for p in [name] + args)
+                    #result=quote_unicode(block(*args).replace("\n", " ")),
                 )
     return ("text/plain", lines)
 

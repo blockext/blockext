@@ -33,6 +33,11 @@ except NameError:
     unicode = str
     unichr = chr
 
+def make_unicode(text):
+    """Fix strings passed in from extension code."""
+    if isinstance(text, bytes):
+        text = text.decode("utf-8")
+    return unicode(text)
 
 def unquote_unicode(text):
     def unicode_unquoter(match):
@@ -103,11 +108,6 @@ class Blockext(BaseHTTPRequestHandler):
             response = "ERROR: Not found"
             status = 404
 
-        if isinstance(response, bytes):
-            response = response.decode("utf-8")
-        else:
-            response = unicode(response)
-
         if is_browser and mime_type == "text/plain":
             # Some browsers seem to hate plain text.
             response = u"""<!DOCTYPE html>
@@ -147,7 +147,7 @@ def handler(name, **kwargs):
 
 
 def menu(name, values):
-    Blockext.menus[name] = list(map(unicode, values))
+    Blockext.menus[name] = list(map(make_unicode, values))
 
 
 @handler("", hidden=True)
@@ -246,7 +246,7 @@ class Block(object):
         if blocking and shape != "command":
             raise ValueError("only commands can be blocking")
 
-        self._text = text
+        self._text = make_unicode(text)
         self.shape = shape
         self.func = func
         self.is_blocking = blocking
@@ -327,7 +327,7 @@ class Block(object):
         if self.shape == "command": result = None
         result = ("true" if result is True else
                   "false" if result is False else
-                  "" if result == None else unicode(result))
+                  "" if result == None else make_unicode(result))
         if request_id and request_id in Blockext.requests:
             del Blockext.requests[request_id]
         return result
