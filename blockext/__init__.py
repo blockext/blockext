@@ -21,6 +21,8 @@ except ImportError:
     from http.server import HTTPServer, BaseHTTPRequestHandler
     from socketserver import ThreadingMixIn
 
+__version__ = '0.1.0'
+
 
 
 # TODO I'm sure this isn't right
