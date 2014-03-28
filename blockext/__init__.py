@@ -220,7 +220,7 @@ def index(is_browser=False):
 
 
 class Block(object):
-    INPUT_RE = re.compile(r'(%.(?:\.[A-z]+)?)')
+    INPUT_RE = re.compile(r'(%[^ ](?:\.[A-z]+)?)')
 
     SHAPE_FMTS = {
         "predicate": "<%s>",
@@ -258,7 +258,8 @@ class Block(object):
 
         self.arg_shapes = []
         for part in Block.INPUT_RE.split(self.text):
-            if part.startswith("%") and part != "%%":
+            match = Block.INPUT_RE.match(part)
+            if match and match.group() == part:
                 assert part[1] in "nbsmd"
                 if part[1] in "md":
                     assert "." in part
@@ -285,7 +286,8 @@ class Block(object):
         r = ""
         defaults = list(self.defaults)
         for part in Block.INPUT_RE.split(self.text):
-            if part.startswith("%") and part != "%%":
+            match = Block.INPUT_RE.match(part)
+            if match and match.group() == part:
                 shape = part[1]
                 fmt = Block.INPUT_FMTS.get(shape, "%s")
                 value = defaults.pop(0)

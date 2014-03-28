@@ -42,7 +42,8 @@ def generate_xml(is_browser=False):
         defaults = list(block.defaults)
         selector = ""
         for part in Block.INPUT_RE.split(block.text):
-            if part.startswith("%") and part != "%%":
+            match = Block.INPUT_RE.match(part)
+            if match and match.group() == part:
                 shape = part[1]
                 input_ = SubElement(inputs, "input", {
                     "type": "%{shape}".format(shape=INPUT_SELECTORS[shape]),
@@ -58,6 +59,9 @@ def generate_xml(is_browser=False):
 
                 input_name = input_names.pop(0) if input_names else ""
                 part = "%'{name}'".format(name=input_name)
+            else:
+                # Snap! doesn't allow %-signs in block text yet.
+                part = part.replace("%", " ").replace("  ", " ")
             selector += part
         defn.attrib["s"] = selector
 
