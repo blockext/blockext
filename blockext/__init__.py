@@ -117,7 +117,8 @@ class Blockext(BaseHTTPRequestHandler):
             """.format(title=name, response=escape(response))
             mime_type = "text/html"
 
-        response = response.encode("utf-8")
+        if not isinstance(response, bytes):
+            response = response.encode("utf-8")
         self.send_response(status)
         self.send_header("Content-Length", str(len(response)))
         self.send_header("Content-Type", mime_type)
