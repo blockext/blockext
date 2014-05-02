@@ -1,7 +1,8 @@
 Tutorial
 ========
 
-    WARNING: this documentation is a work-in-progress. Apologies.
+    WARNING: this documentation is a work-in-progress, as is the library. So
+    this document is incomplete and things will change. Sorry!
 
 This tutorial shows you how to write extensions that are compatible with both
 `Scratch 2.0`_ and `Snap!`_.
@@ -81,8 +82,8 @@ Here's the first line::
 
     from blockext import *
 
-This is just importing the entire contents of the ``blockext`` module. If
-you've done any Python, you should be familiar with this. Next::
+This is just importing the entire contents of the ``blockext`` module.
+If you've done any Python, you might have seen this before. Next::
 
     light = False
 
@@ -123,19 +124,15 @@ I skipped over this line::
 
     menu("city", ["Barcelona", "Boston", "Brighton"])
 
-This defines the options for the menu
-
+This defines the options for the menu.
 
 Now, the final line::
 
     run("Tutorial Example", "example", 5000)
 
-
+* TODO: finish.
+* TODO: rewrite for the new v0.2 interface.
 * TODO: Doesn't crash if you throw an exception.
-
-  <pre class="b">
-    when green flag clicked
-  </pre>
 
 
 .. _Scratch 2.0: http://scratch.mit.edu/
