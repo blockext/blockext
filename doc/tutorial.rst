@@ -130,6 +130,10 @@ Now, the final line::
 
     run("Tutorial Example", "example", 5000)
 
+This starts the extension running on port 5000. We also specify its long name and
+(short) name. The long name is displayed to the user; the short name is used in
+the filenames. (NB. v0.2 will just have "name".)
+
 * TODO: finish.
 * TODO: rewrite for the new v0.2 interface.
 * TODO: Doesn't crash if you throw an exception.
