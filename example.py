@@ -1,92 +1,83 @@
 # coding=utf-8
+from __future__ import unicode_literals
 
-import blockext
+import time
+
 from blockext import *
 
 
 
-@predicate("not %b")
-def not_(value):
-    return not value
+class Example:
+    def __init__(self):
+        self.foo = 0
 
-@command("say %s for %n secs", blocking=True)
-def say_for_secs(text="Hello", duration=5):
-    import time
-    print(text)
-    time.sleep(duration)
+    def _problem(self):
+        if time.time() % 8 > 4:
+            return "The Scratch Sensor board is not connected. Foo."
 
+    def _on_reset(self):
+        print("""
+        Reset! The red stop button has been clicked,
+        And now everything is how it was.
+        ...
+        (Poetry's not my strong point, you understand.)
+        """)
 
-@command("play note %n")
-def play_note(note):
-    print("DING {note}".format(note=note))
-    time.sleep(2)
+    @predicate("not %b")
+    def not_(self, value):
+        return not value
 
-menu("pizza", ["tomato", "cheese", "hawaii", "nothing",
-               "spinach and cauliflower", "empty return value",
-               "cheese and tomato", "fancy",
-               "ü",
-               "/",
-               ])
+    @command("say %s for %n secs", is_blocking=True)
+    def say_for_secs(self, text="Hello", duration=5):
+        print(text)
+        time.sleep(duration)
 
-@reporter("colour of %m.pizza flavour pizza")
-def pizza_colour(pizza="tomato"):
-    return {
-        "tomato": "red",
-        "cheese": "yellow",
-        "cheese and tomato": "YELLOW",
-        "hawaii": "orange AND BLUE",
-        "spinach and cauliflower": "GREEN ü",
-        "empty return value": "",
-        "nothing": "",
-        "/": "SLASH",
-        u"ü": "unicode",
-        u"fancy": "❤☀☆☂",
-    }[pizza]
+    @command("play note %n")
+    def play_note(self, note):
+        print("DING {note}".format(note=note))
+        time.sleep(2)
 
-@reporter("spaaace")
-def getSpaaace():
-    return "space space space space space!"
+    @reporter("colour of %m.pizza flavour pizza", defaults=["tomato"])
+    def pizza_colour(self, pizza):
+        return {
+            "tomato": "red",
+            "cheese": "yellow",
+            "hawaii": "orange and blue",
+        }[pizza]
 
-@reporter("id %s")
-def id(text):
-    """Tests strings can get passed from Snap! to Python and back."""
-    print(text)
-    return text
+    @reporter("id %s")
+    def id(self, text):
+        """Tests strings can get passed from Snap! to Python and back."""
+        print(text)
+        return text
 
-@command("set number to %n% units")
-def percent(number=42):
-    print(number)
+    @command("set number to %n% units")
+    def percent(self, number=42):
+        print(number)
 
-foo = None
+    @command("set foo to %s")
+    def set_foo(self, value=''):
+        self.foo = value
 
-@command("set foo to %s")
-def set_foo(value=''):
-    global foo
-    foo = value
+    @reporter("foo")
+    def get_foo(self):
+        return self.foo
 
-@reporter("foo")
-def get_foo():
-    return foo
+    @command("ü")
+    def x(self):
+        pass
 
-@command("ü")
-def x(): pass
+descriptor = Descriptor(
+    name = "Fancy Spaceship",
+    port = 1234,
+    blocks = get_decorated_blocks_from_class(Example),
+    menus = dict(
+        pizza = ["tomato", "cheese", "hawaii"],
+    ),
+)
 
-@problem
-def my_problem():
-    if time.time() % 8 > 4:
-        return "The Scratch Sensor board is not connected. Foo."
-
-@reset
-def my_reset():
-    print("""
-    Reset! The red stop button has been clicked,
-    And now everything is how it was.
-    ...
-    (Poetry's not my strong point, you understand.)
-    """)
-
-
+extension = Extension(Example, descriptor)
 
 if __name__ == "__main__":
-    blockext.run("Fancy Spaceship", "spaceship", 1234)
+    extension.run_forever(debug=True)
 
