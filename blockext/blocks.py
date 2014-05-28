@@ -116,9 +116,13 @@ class Input(object):
         if self.default is None:
             self.default = ""
             if self.shape == "readonly-menu":
-                options = menus[self.menu]
-                if options:
-                    self.default = options[0]
+                try:
+                    options = menus[self.menu]
+                except KeyError:
+                    raise ValueError(
+                        "menu not found: {}".format(repr(self.menu))
+                    )
+                self.default = options[0]
 
 
 INPUT_SPECS = {
