@@ -22,24 +22,41 @@ programming languages fairly easy.
 Here's a quick example::
 
     from blockext import *
-    
-    class Extension:
+
+    class Tutorial:
         def __init__(self):
-            light = False
-
-        def toggle_light(times=1):
-            global light
+            self.light = False
+    
+        def do_toggle_light(self, times):
             for i in range(times):
-                light = not light
-
-        def is_light_on():
-            return light
-
-        def forecast(city="Boston"):
+                self.light = not self.light
+    
+        def is_light_on(self):
+            return self.light
+    
+        def get_weather(self, day, city):
             import random
-            return random.choice(["windy", "snowy", "sunny"])
-
-    run("Tutorial Example", "example", 5000)
+            return random.choice(["sunny", "cloudy", "windy"])
+    
+    descriptor = Descriptor(
+        name = "Tutorial Example",
+        port = 5000,
+        blocks = [
+            Block('do_toggle_light', 'command', 'press light switch %n times',
+                defaults=[1])
+            Block('is_light_on', 'predicate', 'light is on?'),
+            Block('get_weather', 'reporter', 'weather %m.day in %m.city'),
+        ],
+        menus = dict(
+            day = ["today", "yesterday"],
+            city = ["Barcelona", "Boston", "Bournemouth"],
+        ),
+    )
+    
+    extension = Extension(Tutorial, descriptor)
+    
+    if __name__ == '__main__':
+        extension.run_forever(debug=True)
 
 Let's see it in action! Save and run the example, and then point your web
 browser to http://localhost:5000/. You'll then see a web page with the
