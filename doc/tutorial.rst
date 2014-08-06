@@ -18,29 +18,26 @@ Example
 -------
 
 Blockext is a Python module that makes writing extensions for these block-based
-programming languages much, much easier. It probably couldn't get any easier.
+programming languages fairly easy.
 Here's a quick example::
 
     from blockext import *
+    
+    class Extension:
+        def __init__(self):
+            light = False
 
-    light = False
+        def toggle_light(times=1):
+            global light
+            for i in range(times):
+                light = not light
 
-    @command("press light switch %n times")
-    def toggle_light(times=1):
-        global light
-        for i in range(times):
-            light = not light
+        def is_light_on():
+            return light
 
-    @predicate("light is on?")
-    def is_light_on():
-        return light
-
-    menu("city", ["Barcelona", "Boston", "Brighton"])
-
-    @reporter("weather forecast for %m.city")
-    def forecast(city="Boston"):
-        import random
-        return random.choice(["windy", "snowy", "sunny"])
+        def forecast(city="Boston"):
+            import random
+            return random.choice(["windy", "snowy", "sunny"])
 
     run("Tutorial Example", "example", 5000)
 
