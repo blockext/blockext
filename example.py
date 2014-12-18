@@ -67,6 +67,11 @@ class Example:
     def x(self):
         pass
 
+    @command("set color to %c")
+    def set_color(self, c):
+        print(c)
+    
+
 descriptor = Descriptor(
     name = "Fancy Spaceship",
     port = 1234,

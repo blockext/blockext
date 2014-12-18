@@ -8,6 +8,8 @@ from __future__ import (absolute_import, division,
 from future.builtins import *
 
 import itertools
+import re
+import struct
 
 from .blocks import Block
 from .server import Server, Response, NotFound, Download, Redirect, quote
@@ -164,6 +166,18 @@ def decode_arg(arg, input_):
                 arg = 0
     elif input_.shape == "boolean":
         arg = True if arg == "true" else False if arg == "false" else None
+    elif input_.shape == "color":
+        try:
+            v = int(arg)
+            a, r, g, b = struct.unpack('BBBB', struct.pack('>i', v))
+            arg = r, g, b
+        except (ValueError, struct.error):
+            color_pat = re.compile(r'^rgba\(([0-9]+),([0-9]+),([0-9]+),1\)$')
+            m = color_pat.match(arg)
+            if m:
+                arg = tuple(map(int, m.groups()))
+            else:
+                arg = (0, 0, 0)
     return arg
 
 

@@ -84,6 +84,7 @@ class Input(object):
             * ``'boolean'`` -- boolean input (pointy ends)
             * ``'readonly-menu'`` -- menu input
             * ``'number-menu'`` -- editable number input with menu
+            * ``'color'`` -- color input with picker
 
         """
 
@@ -131,6 +132,7 @@ INPUT_SPECS = {
     "b": "boolean",
     "m": "readonly-menu",
     "d": "number-menu",
+    "c": "color",
 }
 
 

@@ -78,6 +78,7 @@ INPUT_SELECTORS = {
     "boolean": "b",
     "readonly-menu": "txt",
     "number-menu": "n",
+    "color": "clr",
 }
 
 class SnapProgram(Program):
