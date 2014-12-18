@@ -67,7 +67,7 @@ def GetRequestHandlerFactory(app):
 
 class GetRequestHandler(BaseHTTPRequestHandler):
     def log_message(self, format_, *args):
-        if isinstance(args[0], str) and args[0].startswith("GET /poll"):
+        if args[0].startswith(native("GET /poll")):
             return
         return BaseHTTPRequestHandler.log_message(self, format_, *args)
 
